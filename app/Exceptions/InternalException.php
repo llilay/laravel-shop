@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 // 系统内部异常
 // 对于此类异常我们需要有限度地告知用户发生了什么，但又不能把所有信息都暴露给用户
+// 因此我们需要传入两条信息，一条是给用户看的，另一条是打印到日志中给开发人员看的
 class InternalException extends Exception
 {
     protected $msgForUser;
