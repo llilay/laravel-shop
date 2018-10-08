@@ -35,4 +35,38 @@ class UserAddressesController extends Controller
 
         return redirect()->route('user_addresses.index');
     }
+
+    //注意：控制器的参数名 $user_address 必须和路由中的 {user_address} 一致才可以。
+    public function edit(UserAddress $user_address)
+    {
+        $this->authorize('own', $user_address);
+
+        return view('user_addresses.create_and_edit', ['address' => $user_address]);
+    }
+
+    public function update(UserAddress $user_address, UserAddressRequest $request)
+    {
+        $this->authorize('own', $user_address);
+
+        $user_address->update($request->only([
+            'province',
+            'city',
+            'district',
+            'address',
+            'zip',
+            'contact_name',
+            'contact_phone',
+        ]));
+
+        return redirect()->route('user_addresses.index');
+    }
+
+    public function destroy(UserAddress $user_address)
+    {
+        $this->authorize('own', $user_address);
+
+        $user_address->delete();
+
+        return [];
+    }
 }
