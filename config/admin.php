@@ -209,7 +209,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application layout
+    | Application layout 页面侧边栏
     |--------------------------------------------------------------------------
     |
     | This value is the layout of admin pages.
@@ -219,7 +219,7 @@ return [
     | "sidebar-mini".
     |
     */
-    'layout' => ['sidebar-mini', 'sidebar-collapse'],
+    'layout' => ['sidebar-mini'],
 
     /*
     |--------------------------------------------------------------------------
