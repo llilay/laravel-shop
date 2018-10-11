@@ -2,27 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\Order;
+use App\Exceptions\InvalidRequestException;
+use App\Http\Requests\OrderRequest;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
-use Illuminate\Http\Request;
-use App\Http\Requests\OrderRequest;
-use App\Exceptions\InvalidRequestException;
+use App\Models\Order;
+use Carbon\Carbon;
+use App\Jobs\CloseOrder;
 
 class OrdersController extends Controller
 {
     public function store(OrderRequest $request)
     {
-        $user = $request->user();
+        $user  = $request->user();
         // 开启一个数据库事务
         $order = \DB::transaction(function () use ($user, $request) {
             $address = UserAddress::find($request->input('address_id'));
             // 更新此地址的最后使用时间
             $address->update(['last_used_at' => Carbon::now()]);
-
             // 创建一个订单
-            $order = new Order([
+            $order   = new Order([
                 'address'      => [ // 将地址信息放入订单中
                     'address'       => $address->full_address,
                     'zip'           => $address->zip,
@@ -32,7 +31,6 @@ class OrdersController extends Controller
                 'remark'       => $request->input('remark'),
                 'total_amount' => 0,
             ]);
-
             // 订单关联到当前用户
             $order->user()->associate($user);
             // 写入数据库
@@ -51,11 +49,7 @@ class OrdersController extends Controller
                 $item->product()->associate($sku->product_id);
                 $item->productSku()->associate($sku);
                 $item->save();
-
                 $totalAmount += $sku->price * $data['amount'];
-
-                // 如果减库存失败则抛出异常，由于这块代码是在 DB::transaction() 中执行的，
-                // 因此抛出异常时会触发事务的回滚，之前创建的 orders 和 order_items 记录都会被撤销。
                 if ($sku->decreaseStock($data['amount']) <= 0) {
                     throw new InvalidRequestException('该商品库存不足');
                 }
@@ -70,6 +64,8 @@ class OrdersController extends Controller
 
             return $order;
         });
+
+        $this->dispatch(new CloseOrder($order, config('app.order_ttl')));
 
         return $order;
     }
