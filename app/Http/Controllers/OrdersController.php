@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use App\Http\Requests\OrderRequest;
+use Illuminate\Http\Request;
 use App\Models\ProductSku;
 use App\Models\UserAddress;
 use App\Models\Order;
@@ -12,6 +13,17 @@ use App\Jobs\CloseOrder;
 
 class OrdersController extends Controller
 {
+    /**
+     * 下单, 保存订单
+     *
+     * 用 Laravel 提供的延迟任务（Delayed Job）功能实现下面的功能
+     * 在创建订单的同时我们减去了对应商品 SKU 的库存，恶意用户可以通过下大量的订单又不支付来占用商品库存，
+     * 让正常的用户因为库存不足而无法下单。
+     * 因此我们需要有一个关闭未支付订单的机制，当创建订单之后一定时间内没有支付，将关闭订单并退回减去的库存。
+     *
+     * @param OrderRequest $request
+     * @return mixed
+     */
     public function store(OrderRequest $request)
     {
         $user  = $request->user();
@@ -65,8 +77,20 @@ class OrdersController extends Controller
             return $order;
         });
 
+        // 关闭未支付订单
         $this->dispatch(new CloseOrder($order, config('app.order_ttl')));
 
         return $order;
+    }
+
+    public function index(Request $request)
+    {
+        $orders = Order::query()
+            ->with(['items.product', 'items.productSku'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate();
+
+        return view('orders.index', ['orders' => $orders]);
     }
 }
