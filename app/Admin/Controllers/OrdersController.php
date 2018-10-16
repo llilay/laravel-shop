@@ -29,12 +29,12 @@ class OrdersController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function show($id, Content $content)
+    public function show(Order $order, Content $content)
     {
         return $content
-            ->header('Detail')
+            ->header('查看订单')
             ->description('description')
-            ->body($this->detail($id));
+            ->body(view('admin.orders.show', ['order' => $order]));
     }
 
     /**
@@ -67,7 +67,7 @@ class OrdersController extends Controller
     }
 
     /**
-     * Make a grid builder.
+     * 列表
      *
      * @return Grid
      */
