@@ -63,6 +63,13 @@
                                                         </td>
                                                         <td rowspan="{{ count($order->items) }}" class="text-center">
                                                             <a href="{{ route('orders.show', ['order' => $order->id]) }}" class="btn btn-primary btn-xs">查看订单</a>
+                                                            <!-- 评价入口开始 -->
+                                                            @if($order->paid_at)
+                                                                <a class="btn btn-success btn-xs" href="{{ route('orders.review.show', ['order' => $order->id]) }}">
+                                                                    {{ $order->reviewed ? '查看评价' : '评价' }}
+                                                                </a>
+                                                            @endif
+                                                            <!-- 评价入口结束 -->
                                                         </td>
                                                     @endif
                                                 </tr>
