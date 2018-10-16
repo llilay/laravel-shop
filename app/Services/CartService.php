@@ -9,7 +9,7 @@ class CartService
 {
     public function get()
     {
-        return Auth::user()->cartItems()->with(['productSku.product']);
+        return Auth::user()->cartItems()->with(['productSku.product'])->get();
     }
 
     public function add($skuId, $amount)
@@ -36,7 +36,7 @@ class CartService
     public function remove($skuIds)
     {
         // 可以传单个 ID，也可以传 ID 数组
-        if (!in_array($skuIds)) {
+        if (!is_array($skuIds)) {
             $skuIds = [$skuIds];
         }
 
