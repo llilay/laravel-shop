@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         // 由于我们这个 URL 是给支付宝服务器调用的，肯定不会有 CSRF Token
         'payment/alipay/notify',
         'payment/wechat/notify',
+        'payment/wechat/refund_notify',
     ];
 }
