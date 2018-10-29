@@ -4,18 +4,20 @@ namespace App\Providers;
 
 use Monolog\Logger;
 use Yansongda\Pay\Pay;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Bootstrap any application services.
+     * 引导任何应用程序服务
      *
      * @return void
      */
     public function boot()
     {
-        //
+        // 配置迁移生成的默认字符串长度
+        Schema::defaultStringLength(191);
     }
 
     /**
