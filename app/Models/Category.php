@@ -61,7 +61,7 @@ class Category extends Model
     {
         return Category::query()
             // 使用上面的访问器获取所有祖先类目 ID
-            ->where('id', $this->path_ids)
+            ->whereIn('id', $this->path_ids)
             // 按层级排序
             ->orderBy('level')
             ->get();
