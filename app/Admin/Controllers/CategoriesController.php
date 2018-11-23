@@ -2,14 +2,13 @@
 
 namespace App\Admin\Controllers;
 
-//use Encore\Admin\Show;
-use Encore\Admin\Form;
-use Encore\Admin\Grid;
 use App\Models\Category;
-use App\Http\Requests\Request;
-use Encore\Admin\Layout\Content;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Form;
+use Encore\Admin\Grid;
+use Encore\Admin\Layout\Content;
+use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
 {
