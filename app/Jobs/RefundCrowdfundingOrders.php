@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
+use App\Models\CrowdfundingProduct;
 use App\Models\Order;
 use App\Services\OrderService;
-use App\Models\CrowdfundingProduct;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;

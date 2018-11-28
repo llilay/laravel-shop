@@ -6,6 +6,7 @@ use App\Models\CrowdfundingProduct;
 use App\Models\Order;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
+use Encore\Admin\Show;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Layout\Content;
@@ -24,6 +25,21 @@ class OrdersController extends Controller
             ->header('订单列表')
             ->description('description')
             ->body($this->grid());
+    }
+
+    /**
+     * Show interface.
+     *
+     * @param mixed   $id
+     * @param Content $content
+     * @return Content
+     */
+    public function show(Order $order, Content $content)
+    {
+        return $content
+            ->header('查看订单')
+            ->description('description')
+            ->body(view('admin.orders.show', ['order' => $order]));
     }
 
     public function edit($id, Content $content)
@@ -81,6 +97,38 @@ class OrdersController extends Controller
         });
 
         return $grid;
+    }
+
+    /**
+     * Make a show builder.
+     *
+     * @param mixed   $id
+     * @return Show
+     */
+    protected function detail($id)
+    {
+        $show = new Show(Order::findOrFail($id));
+
+        $show->id('Id');
+        $show->no('No');
+        $show->user_id('User id');
+        $show->address('Address');
+        $show->total_amount('Total amount');
+        $show->remark('Remark');
+        $show->paid_at('Paid at');
+        $show->payment_method('Payment method');
+        $show->payment_no('Payment no');
+        $show->refund_status('Refund status');
+        $show->refund_no('Refund no');
+        $show->closed('Closed');
+        $show->reviewed('Reviewed');
+        $show->ship_status('Ship status');
+        $show->ship_data('Ship data');
+        $show->extra('Extra');
+        $show->created_at('Created at');
+        $show->updated_at('Updated at');
+
+        return $show;
     }
 
     protected function form()

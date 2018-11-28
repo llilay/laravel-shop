@@ -10,7 +10,7 @@ use App\Jobs\RefundCrowdfundingOrders;
 // 创建定时任务
 class FinishCrowdfunding extends Command
 {
-    protected $signature = 'command:finish-crowdfunding';
+    protected $signature = 'cron:finish-crowdfunding';
 
     protected $description = '结束众筹';
 
