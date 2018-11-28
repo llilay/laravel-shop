@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Installment;
+use App\Policies\InstallmentPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -15,6 +17,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         'App\Models\UserAddress' => 'App\Policies\UserAddressPolicy',
         'App\Models\Order' => 'App\Policies\OrderPolicy',
+        Installment::class => InstallmentPolicy::class,
     ];
 
     /**
