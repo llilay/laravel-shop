@@ -21,6 +21,7 @@ $factory->define(App\Models\Product::class, function (Faker $faker) {
 
     return [
         'title'        => $faker->word,
+        'long_title'   => $faker->sentence,
         // 将取出的类目 ID 赋给 category_id 字段
         // 如果数据库中没有类目则 $category 为 null，同样 category_id 也设成 null
         'category_id'  => $category ? $category->id : null,
