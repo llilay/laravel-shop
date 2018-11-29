@@ -17,5 +17,6 @@ class VerifyCsrfToken extends Middleware
         'payment/wechat/notify',
         'payment/wechat/refund_notify',
         'installments/alipay/notify',
+        'installments/wechat/notify',
     ];
 }
