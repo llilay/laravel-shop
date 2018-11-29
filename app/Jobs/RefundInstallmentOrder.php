@@ -27,7 +27,9 @@ class RefundInstallmentOrder implements ShouldQueue
     public function handle()
     {
         // 如果商品订单支付方式不是分期付款、订单未支付、订单退款状态不是退款中，则不执行后面的逻辑
-        if ($this->order->payment_method !== 'installment' || !$this->order->paid_at || $this->order->refund_status !== Order::REFUND_STATUS_PROCESSING) {
+        if ($this->order->payment_method !== 'installment'
+            || !$this->order->paid_at
+            || $this->order->refund_status !== Order::REFUND_STATUS_PROCESSING) {
             return;
         }
 
@@ -39,7 +41,10 @@ class RefundInstallmentOrder implements ShouldQueue
         // 遍历对应分期付款的所有还款计划
         foreach ($installment->items as $item) {
             // 如果还款计划未支付，或者退款状态为退款成功或退款中，则跳过
-            if (!$item->paid_at || in_array($item->refund_status, [InstallmentItem::REFUND_STATUS_SUCCESS, InstallmentItem::REFUND_STATUS_PROCESSING])) {
+            if (!$item->paid_at || in_array($item->refund_status, [
+                InstallmentItem::REFUND_STATUS_SUCCESS,
+                InstallmentItem::REFUND_STATUS_PROCESSING
+                ])) {
                 continue;
             }
 
