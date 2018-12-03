@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use App\Services\ProductService;
 use App\Exceptions\InvalidRequestException;
 use App\SearchBuilders\ProductSearchBuilder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -74,11 +75,8 @@ class ProductsController extends Controller
 
         // 通过 collect 函数将返回结果转为集合，并通过集合的 pluck 方法取到返回的商品 ID 数组
         $productIds = collect($result['hits']['hits'])->pluck('_id')->all();
-        // 通过 whereIn 方法从数据库中读取商品数据
-        $product = Product::query()
-            ->whereIn('id', $productIds)
-            ->orderByRaw(sprintf("FIND_IN_SET(id, '%s')", join(',', $productIds)))
-            ->get();
+
+        $product = Product::query()->byIds($productIds)->get();
 
         // 返回一个 LengthAwarePaginator 对象
         $pager = new LengthAwarePaginator($product, $result['hits']['total'], $perPage, $page, [
@@ -123,7 +121,7 @@ class ProductsController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @throws InvalidRequestException
      */
-    public function show(Product $product, Request $request)
+    public function show(Product $product, Request $request, ProductService $service)
     {
         // 判断商品是否已经上架，如果没有上架则抛出异常。
         if (!$product->on_sale) {
@@ -146,10 +144,16 @@ class ProductsController extends Controller
             ->limit(10) // 取出 10 条
             ->get();
 
+        $similarProductIds = $service->getSimilarProductIds($product, 4);
+
+        // 根据 Elasticsearch 搜索出来的商品 ID 从数据库中读取商品数据
+        $similarProducts   = Product::query()->byIds($similarProductIds)->get();
+
         return view('products.show', [
             'product' => $product,
             'favored' => $favored,
             'reviews' => $reviews,
+            'similar' => $similarProducts,
         ]);
     }
 
