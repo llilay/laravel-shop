@@ -23,6 +23,7 @@ Route::group([
     $router->post('orders/{order}/ship', 'OrdersController@ship')->name('admin.orders.ship');
     $router->post('orders/{order}/refund', 'OrdersController@handleRefund')->name('admin.orders.handle_refund');
 
+    //----------------------------优惠码-----------------------------
     $router->get('coupon_codes', 'CouponCodesController@index');
     $router->post('coupon_codes', 'CouponCodesController@store');
     $router->get('coupon_codes/create', 'CouponCodesController@create');
@@ -30,6 +31,7 @@ Route::group([
     $router->put('coupon_codes/{id}', 'CouponCodesController@update');
     $router->delete('coupon_codes/{id}', 'CouponCodesController@destroy');
 
+    //----------------------------商品类目-----------------------------
     $router->get('categories', 'CategoriesController@index');
     $router->get('categories/create', 'CategoriesController@create');
     $router->get('categories/{id}/edit', 'CategoriesController@edit');
@@ -38,10 +40,18 @@ Route::group([
     $router->delete('categories/{id}', 'CategoriesController@destroy');
     $router->get('api/categories', 'CategoriesController@apiIndex');
 
+    //----------------------------众筹商品-----------------------------
     $router->get('crowdfunding_products', 'CrowdfundingProductsController@index');
     $router->get('crowdfunding_products/create', 'CrowdfundingProductsController@create');
     $router->post('crowdfunding_products', 'CrowdfundingProductsController@store');
     $router->get('crowdfunding_products/{id}/edit', 'CrowdfundingProductsController@edit');
     $router->put('crowdfunding_products/{id}', 'CrowdfundingProductsController@update');
+
+    //----------------------------秒杀商品-----------------------------
+    $router->get('seckill_products', 'SeckillProductsController@index');
+    $router->get('seckill_products/create', 'SeckillProductsController@create');
+    $router->post('seckill_products', 'SeckillProductsController@store');
+    $router->get('seckill_products/{id}/edit', 'SeckillProductsController@edit');
+    $router->put('seckill_products/{id}', 'SeckillProductsController@update');
 
 });
