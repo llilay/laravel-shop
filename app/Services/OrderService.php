@@ -16,6 +16,7 @@ use App\Exceptions\CouponCodeUnavailableException;
 
 class OrderService
 {
+    // 普通商品下单
     public function store(User $user, UserAddress $address, $remark, $items, CouponCode $coupon = null)
     {
         // 如果传入了优惠券，则先检查是否可用
@@ -142,6 +143,49 @@ class OrderService
         return $order;
     }
 
+    // 秒杀商品下单
+    public function seckill(User $user, UserAddress $address, ProductSku $sku)
+    {
+        $order = \DB::transaction(function () use ($user, $address, $sku) {
+            // 更新此地址的最后使用时间
+            $address->update(['last_used_at' => Carbon::now()]);
+            // 创建一个订单
+            $order = new Order([
+                'address'      => [
+                    'address'       => $address->full_address,
+                    'zip'           => $address->zip,
+                    'contact_name'  => $address->contact_name,
+                    'contact_phone' => $address->contact_phone,
+                ],
+                'remark'       => '',
+                'total_amount' => $sku->price,
+                'type'         => Order::TYPE_SECKILL,
+            ]);
+
+            $order->user()->associate($user); // 订单关联到当前用户
+            $order->save();
+
+            $item = $order->items()->make([ // 创建一个新的订单项并与 SKU 关联
+                'amount' => 1,
+                'price'  => $sku->price,
+            ]);
+            $item->product()->associate($sku->product_id);
+            $item->productSku()->associate($sku);
+            $item->save();
+
+            if ($sku->decreaseStock(1) <= 0) {
+                throw new InvalidRequestException('该商品库存不足');
+            }
+
+            return $order;
+        });
+
+        // 秒杀订单的自动关闭时间与普通订单不同
+        dispatch(new CloseOrder($order, config('app.seckill_order_ttl')));
+
+        return $order;
+    }
+
     public function refundOrder(Order $order)
     {
         // 判断该订单的支付方式
@@ -210,4 +254,6 @@ class OrderService
                 break;
         }
     }
+
+
 }
