@@ -5,6 +5,7 @@ namespace App\Providers;
 use Carbon\Carbon;
 use Monolog\Logger;
 use Yansongda\Pay\Pay;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Elasticsearch\ClientBuilder as ESClientBuilder;
@@ -79,5 +80,11 @@ class AppServiceProvider extends ServiceProvider
 
             return $builder->build();
         });
+
+        if (app()->environment('local')) {
+            \DB::listen(function ($query) {
+                \Log::info(Str::replaceArray('?', $query->bindings, $query->sql));
+            });
+        }
     }
 }
